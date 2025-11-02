@@ -57,6 +57,7 @@
     flex:1;
     padding:14px;
     text-align:center;
+    border: none;
     border-radius:10px;
     background: linear-gradient(135deg, #6dd5ed, #2193b0);
     color:white;
@@ -77,62 +78,68 @@
 <div class="box">
   <div class="qee"></div>
   <div class="ans">
-    <div class="option"></div>
-    <div class="option"></div>
-    <div class="option"></div>
+    <button class="option"></button>
+    <button class="option"></button>
+    <button class="option"></button>
   </div>
-  <div class="wr"></div>
 </div>
 
 <script>
 
 const qee = document.querySelector(".qee");
-const wr = document.querySelector(".wr");
 const options = document.querySelectorAll(".option");
 
-let num1 = Math.floor(Math.random() * 50) + 1;
-let num2 = Math.floor(Math.random() * 50) + 1;
-
-let ops = ["+", "-", "×", "÷"];
-let op = ops[Math.floor(Math.random() * ops.length)];
-
-let iut;
-
-if(op === "+") iut = num1 + num2;
-else if(op === "-") iut = num1 - num2;
-else if(op === "×") iut = num1 * num2;
-else if(op === "÷"){ num1 = num1 * num2; iut = num1 / num2; }
-
-qee.innerHTML = `${num1} ${op} ${num2} = ?`;
-
-let correctIndex = Math.floor(Math.random() * options.length);
-options[correctIndex].innerHTML = iut;
-
-let wrong1, wrong2;
-do { wrong1 = iut + Math.floor(Math.random() * 10) + 1; } while(wrong1 === iut);
-do { wrong2 = iut - (Math.floor(Math.random() * 10) + 1); } while(wrong2 === iut || wrong2 === wrong1);
-
-let fill = 0;
-options.forEach((div, index) => {
-  if(index !== correctIndex){
-    div.innerHTML = fill === 0 ? wrong1 : wrong2;
-    fill++;
-  }
-});
-
-options.forEach(div =>{
-  div.addEventListener("click",()=>{
-    if(Number(div.innerText)===iut){
-      div.style.color = "green";
-     div.style.border="2px solid green";
-     div.style.backgroundColor="transparent";
-    }else{
-     div.style.color = "red";
-     div.style.border="2px solid red";
-     div.style.backgroundColor="transparent";
-    }
+function generate(){
+  options.forEach(btn=>{
+    btn.style = "";
+    btn.disabled = false;
   });
-});
+
+  let num1 = Math.floor(Math.random() * 50) + 1;
+  let num2 = Math.floor(Math.random() * 50) + 1;
+  let ops = ["+", "-", "×", "÷"];
+  let op = ops[Math.floor(Math.random() * ops.length)];
+  let iut;
+
+  if(op === "+") iut = num1 + num2;
+  else if(op === "-") iut = num1 - num2;
+  else if(op === "×") iut = num1 * num2;
+  else if(op === "÷"){ num1 = num1 * num2; iut = num1 / num2; }
+
+  qee.innerHTML = `${num1} ${op} ${num2} = ?`;
+
+  let correctIndex = Math.floor(Math.random() * 3);
+  options[correctIndex].innerHTML = iut;
+
+  let wrong1, wrong2;
+  do { wrong1 = iut + Math.floor(Math.random() * 10) + 1; } while(wrong1 === iut);
+  do { wrong2 = iut - (Math.floor(Math.random() * 10) + 1); } while(wrong2 === iut || wrong2 === wrong1);
+
+  let wArr = [wrong1, wrong2];
+  let w = 0;
+
+  options.forEach((btn,i)=>{
+    if(i!==correctIndex){
+      btn.innerHTML = wArr[w];
+      w++;
+    }
+    btn.onclick = ()=>{
+      if(Number(btn.innerText)===iut){
+        btn.style = "color:green; border:4px solid green; background:transparent;";
+      }else{
+        btn.style = "color:red; border:4px solid red; background:transparent;";
+        options[correctIndex].style = "color:green; border:4px solid green; background:transparent;";
+      }
+
+      options.forEach(b=>b.disabled = true); 
+
+      setTimeout(generate, 1000);
+    };
+  });
+}
+
+generate();
+
 </script>
 </body>
 </html>
